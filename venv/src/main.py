@@ -15,6 +15,7 @@ OTHER_GREEN = (45, 80, 44)
 GREY = (155, 155, 155)
 BLUE = (0, 0, 255)
 RED = (255, 0, 0)
+WHITE = (255, 255, 255)
 
 x_snake = 400
 y_snake = 200
@@ -22,6 +23,9 @@ x_direction = 0
 y_direction = 0
 x_speed = 0
 y_speed = 0
+
+font = pygame.font.Font(None, 30)
+score_text = font.render("Score:", 0, WHITE)
 
 class Snake():
     def __init__(self):
@@ -48,6 +52,7 @@ def update_screen():
     draw_grid(500, 500, 20)
     apple.draw_apple()
     snake.draw_snake(x_snake, y_snake, 20, 20)
+    screen.blit(score_text, (20, 20))
     pygame.display.update()
 
 def draw_grid(height, width, rect_size):
