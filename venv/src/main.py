@@ -7,6 +7,8 @@ size = 500, 500
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption('SNAKE')
 
+#------------------------ VARIABLES ----------------------------------------------------------------------------------------------------------
+
 FPS = 10
 fps_clock = pygame.time.Clock()
 
@@ -27,11 +29,14 @@ y_speed = 0
 font = pygame.font.Font(None, 30)
 score_text = font.render("Score:", 0, WHITE)
 
+score = 0
+
+#-------------------------- CLASSES --------------------------------------------------------------------------------------------------------------
+
 class Snake():
     def __init__(self):
         super().__init__()
         
-
     def draw_snake(self, x, y, rect_width, rect_height):
         pygame.draw.rect(screen, BLUE, [x, y, rect_width, rect_height]) 
 
@@ -46,13 +51,16 @@ class Apple():
     def draw_apple(self):
         pygame.draw.rect(screen, RED, [self.x, self.y, self.apple_width, self.apple_height])
 
+#----------------------- FUNCTIONS ------------------------------------------------------------------------------------------------------------
 
 def update_screen():
     screen.fill(GREEN)
     draw_grid(500, 500, 20)
     apple.draw_apple()
     snake.draw_snake(x_snake, y_snake, 20, 20)
+    score_number = font.render(str(score), 0, WHITE)
     screen.blit(score_text, (20, 20))
+    screen.blit(score_number, (90, 21))
     pygame.display.update()
 
 def draw_grid(height, width, rect_size):
@@ -71,8 +79,11 @@ def draw_grid(height, width, rect_size):
 snake = Snake()
 apples = []
 
+#------------------------- MAIN LOOPs ------------------------------------------------------------------------------------------------------------------
+
 run = True
 while run:
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
@@ -111,6 +122,7 @@ while run:
 
     if x_apple == x_snake and y_apple == y_snake:
         apples.pop(0)
+        score += 1
 
     update_screen()
     fps_clock.tick(FPS)
