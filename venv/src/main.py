@@ -77,10 +77,7 @@ while run:
     x_snake = x_direction
     y_snake = y_direction
 
-    if x_snake >= 500:
-        run = False
-
-    if y_snake >= 500:
+    if x_snake >= 500 or x_snake < 0 or y_snake >= 500 or y_snake < 0:
         run = False
 
     update_screen()
