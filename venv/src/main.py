@@ -1,4 +1,5 @@
 import pygame
+import random
 
 pygame.init()
 
@@ -10,8 +11,10 @@ FPS = 10
 fps_clock = pygame.time.Clock()
 
 GREEN = (45, 87, 44)
+OTHER_GREEN = (45, 80, 44)
 GREY = (155, 155, 155)
 BLUE = (0, 0, 255)
+RED = (255, 0, 0)
 
 x_snake = 400
 y_snake = 200
@@ -23,13 +26,27 @@ y_speed = 0
 class Snake():
     def __init__(self):
         super().__init__()
+        
 
     def draw_snake(self, x, y, rect_width, rect_height):
         pygame.draw.rect(screen, BLUE, [x, y, rect_width, rect_height]) 
 
+class Apple():
+    def __init__(self, x, y, apple_width, apple_height):
+        super().__init__()
+        self.x = x
+        self.y = y
+        self.apple_width = apple_width
+        self.apple_height = apple_height
+
+    def draw_apple(self):
+        pygame.draw.rect(screen, RED, [self.x, self.y, self.apple_width, self.apple_height])
+
+
 def update_screen():
     screen.fill(GREEN)
     draw_grid(500, 500, 20)
+    apple.draw_apple()
     snake.draw_snake(x_snake, y_snake, 20, 20)
     pygame.display.update()
 
@@ -40,13 +57,14 @@ def draw_grid(height, width, rect_size):
 
     for i in range(height):
         x_height = x_height + rect_size
-        pygame.draw.line(screen, GREY, (x_height, 0), (x_height, 500))
+        pygame.draw.line(screen, OTHER_GREEN, (x_height, 0), (x_height, 500))
 
     for i in range(width):
         y_width = y_width + rect_size
-        pygame.draw.line(screen, GREY, (0, y_width), (500, y_width))
+        pygame.draw.line(screen, OTHER_GREEN, (0, y_width), (500, y_width))
 
 snake = Snake()
+apples = []
 
 run = True
 while run:
@@ -79,6 +97,15 @@ while run:
 
     if x_snake >= 500 or x_snake < 0 or y_snake >= 500 or y_snake < 0:
         run = False
+
+    if len(apples) == 0:
+        x_apple = random.randrange(0, 480, 20)
+        y_apple = random.randrange(0, 480, 20)
+        apple = Apple(x_apple, y_apple, 20, 20)
+        apples.append(apple)
+
+    if x_apple == x_snake and y_apple == y_snake:
+        apples.pop(0)
 
     update_screen()
     fps_clock.tick(FPS)
