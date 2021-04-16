@@ -55,19 +55,19 @@ while run:
             run = False
 
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP:
+            if event.key == pygame.K_UP and y_speed != 20:
                 x_speed = 0
                 y_speed = -20
 
-            if event.key == pygame.K_DOWN:
+            if event.key == pygame.K_DOWN and y_speed != -20:
                 x_speed = 0
                 y_speed = 20
 
-            if event.key == pygame.K_RIGHT:
+            if event.key == pygame.K_RIGHT and x_speed != -20:
                 x_speed = 20
                 y_speed = 0
 
-            if event.key == pygame.K_LEFT:
+            if event.key == pygame.K_LEFT and x_speed != 20:
                 x_speed = -20
                 y_speed = 0
 
