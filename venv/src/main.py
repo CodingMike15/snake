@@ -1,3 +1,4 @@
+from typing import Tuple
 import pygame
 import random
 
@@ -28,8 +29,6 @@ WHITE = (255, 255, 255)
 x_snake = 400
 y_snake = 200
 direction = ''
-
-
 snake_pos_x = [x_snake]
 snake_pos_y = [y_snake]
 
@@ -38,7 +37,11 @@ apples = []
 
 # UI
 font = pygame.font.Font(None, 30)
+font_title = pygame.font.Font(None, 100)
+font_play_btn = pygame.font.Font(None, 40)
+text_play_btn = font_play_btn.render('Play', 0, WHITE)
 score_text = font.render("Score:", 0, WHITE)
+title = font_title.render("SNAKE", 0, WHITE)
 score = 0
 
 #-------------------------- CLASSES --------------------------------------------------------------------------------------------------------------
@@ -67,9 +70,23 @@ class Apple():
     def draw_apple(self):
         pygame.draw.rect(screen, RED, [self.x, self.y, self.apple_width, self.apple_height])
 
+class Button():
+    def __init__(self, x, y, width, height, color, text):
+        super().__init__()
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.color = color
+        self.text = text
+        self.pressed = False
+
+    def draw_button(self):
+        pygame.draw.rect(screen, self.color, [self.x, self.y, self.width, self.height])   
+
 #----------------------- FUNCTIONS ------------------------------------------------------------------------------------------------------------
 
-def update_screen():
+def update_game():
     screen.fill(GREEN)
     draw_grid(500, 500, 20)
     apple.draw_apple()
@@ -78,6 +95,13 @@ def update_screen():
     score_number = font.render(str(score), 0, WHITE)
     screen.blit(score_text, (20, 20))
     screen.blit(score_number, (90, 21))
+    pygame.display.update()
+
+def update_menu():
+    screen.fill(GREEN)
+    screen.blit(title, (120, 50))
+    btn_play.draw_button()
+    screen.blit(text_play_btn, (219, 168))
     pygame.display.update()
 
 def draw_grid(height, width, rect_size):
@@ -96,78 +120,98 @@ def draw_grid(height, width, rect_size):
 #------------------------- MAIN LOOP ------------------------------------------------------------------------------------------------------------------
 
 snake = Snake()
+btn_play = Button(190, 150, 120, 60, GREY, 'Play')
 
 run = True
+menu = True
+play = False
 while run:
 
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
+    while menu:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                menu = False
+                run = False
 
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_UP and direction != 'DOWN':
-                direction = 'UP'
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if pygame.mouse.get_pos() > (btn_play.x, btn_play.y) and pygame.mouse.get_pos() < (btn_play.x + btn_play.width, btn_play.y + btn_play.height):
+                menu = False
+                play = True
+        
+        update_menu()
 
-            if event.key == pygame.K_DOWN and direction != 'UP':
-                direction = 'DOWN'
+    while play:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                play = False
+                run = False
 
-            if event.key == pygame.K_RIGHT and direction != 'LEFT':
-                direction = 'RIGHT'
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_UP and direction != 'DOWN':
+                    direction = 'UP'
 
-            if event.key == pygame.K_LEFT and direction != 'RIGHT':
-                direction = 'LEFT'
-    
-    if direction == 'UP':
-        y_snake -= 20
+                if event.key == pygame.K_DOWN and direction != 'UP':
+                    direction = 'DOWN'
 
-    if direction == 'DOWN':
-        y_snake += 20
+                if event.key == pygame.K_RIGHT and direction != 'LEFT':
+                    direction = 'RIGHT'
 
-    if direction == 'RIGHT':
-        x_snake += 20
-
-    if direction == 'LEFT':
-        x_snake -= 20
-
-    snake_pos_x.insert(0, x_snake)
-    snake_pos_y.insert(0, y_snake)
-
-    snake_pos_x.pop(len(snake_pos_x) - 1)
-    snake_pos_y.pop(len(snake_pos_y) - 1)
-
-    if snake_pos_x[0] >= 500 or snake_pos_x[0] < 0 or snake_pos_y[0] >= 500 or snake_pos_y[0] < 0:
-        run = False
-
-    for i in range(1, len(snake_pos_x)):
-        if snake_pos_x[0] == snake_pos_x[i] and snake_pos_y[0] == snake_pos_y[i]:
-            run = False
-
-    if len(apples) == 0:
-        x_apple = random.randrange(0, 480, 20)
-        y_apple = random.randrange(0, 480, 20)
-        apple = Apple(x_apple, y_apple)
-        apples.append(apple)
-
-    if x_apple == snake_pos_x[0] and y_apple == snake_pos_y[0]:
-        apples.pop(0)
-        score += 1
+                if event.key == pygame.K_LEFT and direction != 'RIGHT':
+                    direction = 'LEFT'
+        
         if direction == 'UP':
-            snake_pos_x.append(snake_pos_x[len(snake_pos_x) - 1])
-            snake_pos_y.append(snake_pos_y[len(snake_pos_y)- 1] + 20)
+            y_snake -= 20
 
         if direction == 'DOWN':
-            snake_pos_x.append(snake_pos_x[len(snake_pos_x) - 1])
-            snake_pos_y.append(snake_pos_y[len(snake_pos_y) -1] - 20)
+            y_snake += 20
 
         if direction == 'RIGHT':
-            snake_pos_x.append(snake_pos_x[len(snake_pos_x) - 1] - 20)
-            snake_pos_y.append(snake_pos_y[len(snake_pos_y) - 1])
+            x_snake += 20
 
         if direction == 'LEFT':
-            snake_pos_x.append(snake_pos_x[len(snake_pos_x) - 1] + 20)
-            snake_pos_y.append(snake_pos_y[len(snake_pos_y) - 1])
+            x_snake -= 20
 
-    update_screen()
-    fps_clock.tick(FPS)
+        snake_pos_x.insert(0, x_snake)
+        snake_pos_y.insert(0, y_snake)
+
+        snake_pos_x.pop(len(snake_pos_x) - 1)
+        snake_pos_y.pop(len(snake_pos_y) - 1)
+
+        if snake_pos_x[0] >= 500 or snake_pos_x[0] < 0 or snake_pos_y[0] >= 500 or snake_pos_y[0] < 0:
+            play = False
+            run = False
+
+        for i in range(1, len(snake_pos_x)):
+            if snake_pos_x[0] == snake_pos_x[i] and snake_pos_y[0] == snake_pos_y[i]:
+                play = False
+                run = False
+
+        if len(apples) == 0:
+            x_apple = random.randrange(0, 480, 20)
+            y_apple = random.randrange(0, 480, 20)
+            apple = Apple(x_apple, y_apple)
+            apples.append(apple)
+
+        if x_apple == snake_pos_x[0] and y_apple == snake_pos_y[0]:
+            apples.pop(0)
+            score += 1
+            if direction == 'UP':
+                snake_pos_x.append(snake_pos_x[len(snake_pos_x) - 1])
+                snake_pos_y.append(snake_pos_y[len(snake_pos_y)- 1] + 20)
+
+            if direction == 'DOWN':
+                snake_pos_x.append(snake_pos_x[len(snake_pos_x) - 1])
+                snake_pos_y.append(snake_pos_y[len(snake_pos_y) -1] - 20)
+
+            if direction == 'RIGHT':
+                snake_pos_x.append(snake_pos_x[len(snake_pos_x) - 1] - 20)
+                snake_pos_y.append(snake_pos_y[len(snake_pos_y) - 1])
+
+            if direction == 'LEFT':
+                snake_pos_x.append(snake_pos_x[len(snake_pos_x) - 1] + 20)
+                snake_pos_y.append(snake_pos_y[len(snake_pos_y) - 1])
+
+        update_game()
+        fps_clock.tick(FPS)
 
 pygame.quit()
