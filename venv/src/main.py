@@ -115,20 +115,9 @@ def update_game_over():
     screen.blit(title_game_over, (40, 50))
     btn_play.draw_button()
     screen.blit(text_play_btn, (219, 168))
+    btn_quit.draw_button()
+    screen.blit(text_quit_btn, (219, 257))
     pygame.display.update()
-
-def restart_game():
-    x_snake = 400
-    y_snake = 200
-    direction = 'NONE'
-
-    snake_pos_x.clear()
-    snake_pos_y.clear()
-
-    snake_pos_x.append(x_snake)
-    snake_pos_y.append(y_snake)
-
-    score = 0
 
 def draw_grid(height, width, rect_size):
     x_height = 0
@@ -227,6 +216,12 @@ while run:
         if len(apples) == 0:
             x_apple = random.randrange(0, 480, 20)
             y_apple = random.randrange(0, 480, 20)
+
+            for i in range(len(snake_pos_x)):
+                if snake_pos_x[i] == x_apple and snake_pos_y[i] == y_apple:
+                    x_apple = random.randrange(0, 480, 20)
+                    y_apple = random.randrange(0, 480, 20)
+
             apple = Apple(x_apple, y_apple)
             apples.append(apple)
 
@@ -253,6 +248,7 @@ while run:
         fps_clock.tick(FPS)
 
     while game_over:
+        mouse_x, mouse_y = pygame.mouse.get_pos()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 game_over = False
@@ -261,9 +257,25 @@ while run:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if mouse_x > btn_play.x and mouse_x < btn_play.x + btn_play.width:
                     if mouse_y > btn_play.y and mouse_y < btn_play.y + btn_play.height:
+                        x_snake = 400
+                        y_snake = 200
+                        direction = 'NONE'
+
+                        snake_pos_x.clear()
+                        snake_pos_y.clear()
+
+                        snake_pos_x.append(x_snake)
+                        snake_pos_y.append(y_snake)
+
+                        score = 0
+
                         game_over = False
                         play = True
-                        restart_game()
+
+                if mouse_x > btn_quit.x and mouse_x < btn_quit.x + btn_quit.width:
+                    if mouse_y > btn_quit.y and mouse_y < btn_quit.y + btn_quit.height:
+                        game_over = False
+                        run = False
                 
         update_game_over()
 
