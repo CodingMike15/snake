@@ -37,11 +37,17 @@ apples = []
 
 # UI
 font = pygame.font.Font(None, 30)
-font_title = pygame.font.Font(None, 100)
+font_title_menu = pygame.font.Font(None, 100)
 font_play_btn = pygame.font.Font(None, 40)
+font_title_game_over = pygame.font.Font(None, 100)
+
+
 text_play_btn = font_play_btn.render('Play', 0, WHITE)
+text_quit_btn = font_play_btn.render('Quit', 0, WHITE)
 score_text = font.render("Score:", 0, WHITE)
-title = font_title.render("SNAKE", 0, WHITE)
+title_menu = font_title_menu.render("SNAKE", 0, WHITE)
+title_game_over = font_title_game_over.render('GAME OVER', 0, WHITE)
+
 score = 0
 
 #-------------------------- CLASSES --------------------------------------------------------------------------------------------------------------
@@ -71,14 +77,13 @@ class Apple():
         pygame.draw.rect(screen, RED, [self.x, self.y, self.apple_width, self.apple_height])
 
 class Button():
-    def __init__(self, x, y, width, height, color, text):
+    def __init__(self, x, y, width, height, color):
         super().__init__()
         self.x = x
         self.y = y
         self.width = width
         self.height = height
         self.color = color
-        self.text = text
         self.pressed = False
 
     def draw_button(self):
@@ -99,7 +104,16 @@ def update_game():
 
 def update_menu():
     screen.fill(GREEN)
-    screen.blit(title, (120, 50))
+    screen.blit(title_menu, (120, 50))
+    btn_play.draw_button()
+    screen.blit(text_play_btn, (219, 168))
+    btn_quit.draw_button()
+    screen.blit(text_quit_btn, (219, 257))
+    pygame.display.update()
+
+def update_game_over():
+    screen.fill(RED)
+    screen.blit(title_game_over, (40, 50))
     btn_play.draw_button()
     screen.blit(text_play_btn, (219, 168))
     pygame.display.update()
@@ -120,11 +134,13 @@ def draw_grid(height, width, rect_size):
 #------------------------- MAIN LOOP ------------------------------------------------------------------------------------------------------------------
 
 snake = Snake()
-btn_play = Button(190, 150, 120, 60, GREY, 'Play')
+btn_play = Button(190, 150, 120, 60, GREY)
+btn_quit = Button(190, 240, 120, 60, GREY)
 
 run = True
 menu = True
 play = False
+game_over = False
 while run:
 
     while menu:
@@ -137,6 +153,11 @@ while run:
             if pygame.mouse.get_pos() > (btn_play.x, btn_play.y) and pygame.mouse.get_pos() < (btn_play.x + btn_play.width, btn_play.y + btn_play.height):
                 menu = False
                 play = True
+
+            if pygame.mouse.get_pos() > (btn_quit.x, btn_quit.y) and pygame.mouse.get_pos() < (btn_quit.x + btn_quit.width, btn_quit.y + btn_quit.height):
+                menu = False
+                play = False
+                run = False
         
         update_menu()
 
@@ -159,6 +180,10 @@ while run:
                 if event.key == pygame.K_LEFT and direction != 'RIGHT':
                     direction = 'LEFT'
         
+        if direction == 'NONE':
+            x_snake = x_snake
+            y_snake = y_snake
+
         if direction == 'UP':
             y_snake -= 20
 
@@ -179,12 +204,12 @@ while run:
 
         if snake_pos_x[0] >= 500 or snake_pos_x[0] < 0 or snake_pos_y[0] >= 500 or snake_pos_y[0] < 0:
             play = False
-            run = False
+            game_over = True
 
         for i in range(1, len(snake_pos_x)):
             if snake_pos_x[0] == snake_pos_x[i] and snake_pos_y[0] == snake_pos_y[i]:
                 play = False
-                run = False
+                game_over = True
 
         if len(apples) == 0:
             x_apple = random.randrange(0, 480, 20)
@@ -213,5 +238,30 @@ while run:
 
         update_game()
         fps_clock.tick(FPS)
+
+    while game_over:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                game_over = False
+                run = False
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if pygame.mouse.get_pos() > (btn_play.x, btn_play.y) and pygame.mouse.get_pos() < (btn_play.x + btn_play.width, btn_play.y + btn_play.height):
+                x_snake = 400
+                y_snake = 200
+                direction = 'NONE'
+
+                snake_pos_x.clear()
+                snake_pos_y.clear()
+
+                snake_pos_x.append(x_snake)
+                snake_pos_y.append(y_snake)
+
+                score = 0
+
+                game_over = False
+                play = True
+
+        update_game_over()
 
 pygame.quit()
