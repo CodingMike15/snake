@@ -1,4 +1,3 @@
-from typing import Tuple
 import pygame
 import random
 
@@ -39,11 +38,12 @@ apples = []
 font = pygame.font.Font(None, 30)
 font_title_menu = pygame.font.Font(None, 100)
 font_play_btn = pygame.font.Font(None, 40)
+font_quit_btn = pygame.font.Font(None, 40)
 font_title_game_over = pygame.font.Font(None, 100)
 
 
 text_play_btn = font_play_btn.render('Play', 0, WHITE)
-text_quit_btn = font_play_btn.render('Quit', 0, WHITE)
+text_quit_btn = font_quit_btn.render('Quit', 0, WHITE)
 score_text = font.render("Score:", 0, WHITE)
 title_menu = font_title_menu.render("SNAKE", 0, WHITE)
 title_game_over = font_title_game_over.render('GAME OVER', 0, WHITE)
@@ -84,7 +84,6 @@ class Button():
         self.width = width
         self.height = height
         self.color = color
-        self.pressed = False
 
     def draw_button(self):
         pygame.draw.rect(screen, self.color, [self.x, self.y, self.width, self.height])   
@@ -118,6 +117,19 @@ def update_game_over():
     screen.blit(text_play_btn, (219, 168))
     pygame.display.update()
 
+def restart_game():
+    x_snake = 400
+    y_snake = 200
+    direction = 'NONE'
+
+    snake_pos_x.clear()
+    snake_pos_y.clear()
+
+    snake_pos_x.append(x_snake)
+    snake_pos_y.append(y_snake)
+
+    score = 0
+
 def draw_grid(height, width, rect_size):
     x_height = 0
     y_width = 0
@@ -142,22 +154,23 @@ menu = True
 play = False
 game_over = False
 while run:
-
     while menu:
+        mouse_x, mouse_y = pygame.mouse.get_pos()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 menu = False
                 run = False
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if pygame.mouse.get_pos() > (btn_play.x, btn_play.y) and pygame.mouse.get_pos() < (btn_play.x + btn_play.width, btn_play.y + btn_play.height):
-                menu = False
-                play = True
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if mouse_x > btn_play.x and mouse_x < btn_play.x + btn_play.width:
+                    if mouse_y > btn_play.y and mouse_y < btn_play.y + btn_play.height:
+                        menu = False
+                        play = True
 
-            if pygame.mouse.get_pos() > (btn_quit.x, btn_quit.y) and pygame.mouse.get_pos() < (btn_quit.x + btn_quit.width, btn_quit.y + btn_quit.height):
-                menu = False
-                play = False
-                run = False
+                if mouse_x > btn_quit.x and mouse_x < btn_quit.x + btn_quit.width:
+                    if mouse_y > btn_quit.y and mouse_y < btn_quit.y + btn_quit.height:
+                        menu = False
+                        run = False
         
         update_menu()
 
@@ -245,23 +258,13 @@ while run:
                 game_over = False
                 run = False
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            if pygame.mouse.get_pos() > (btn_play.x, btn_play.y) and pygame.mouse.get_pos() < (btn_play.x + btn_play.width, btn_play.y + btn_play.height):
-                x_snake = 400
-                y_snake = 200
-                direction = 'NONE'
-
-                snake_pos_x.clear()
-                snake_pos_y.clear()
-
-                snake_pos_x.append(x_snake)
-                snake_pos_y.append(y_snake)
-
-                score = 0
-
-                game_over = False
-                play = True
-
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if mouse_x > btn_play.x and mouse_x < btn_play.x + btn_play.width:
+                    if mouse_y > btn_play.y and mouse_y < btn_play.y + btn_play.height:
+                        game_over = False
+                        play = True
+                        restart_game()
+                
         update_game_over()
 
 pygame.quit()
