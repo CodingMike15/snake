@@ -12,7 +12,7 @@ pygame.display.set_caption('SNAKE')
 #------------------------ VARIABLES ----------------------------------------------------------------------------------------------------------
 
 # FPS
-FPS = 10
+FPS = 8
 fps_clock = pygame.time.Clock()
 
 # COLORS
@@ -150,7 +150,7 @@ while run:
 
     if x_apple == snake_pos_x[0] and y_apple == snake_pos_y[0]:
         apples.pop(0)
-        
+        score += 1
         if direction == 'UP':
             snake_pos_x.append(snake_pos_x[len(snake_pos_x) - 1])
             snake_pos_y.append(snake_pos_y[len(snake_pos_y)- 1] + 20)
@@ -159,15 +159,13 @@ while run:
             snake_pos_x.append(snake_pos_x[len(snake_pos_x) - 1])
             snake_pos_y.append(snake_pos_y[len(snake_pos_y) -1] - 20)
 
-        if direction == 'RIGTH':
+        if direction == 'RIGHT':
             snake_pos_x.append(snake_pos_x[len(snake_pos_x) - 1] - 20)
             snake_pos_y.append(snake_pos_y[len(snake_pos_y) - 1])
 
         if direction == 'LEFT':
             snake_pos_x.append(snake_pos_x[len(snake_pos_x) - 1] + 20)
             snake_pos_y.append(snake_pos_y[len(snake_pos_y) - 1])
-
-        score += 1
 
     update_screen()
     fps_clock.tick(FPS)
